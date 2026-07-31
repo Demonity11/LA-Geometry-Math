@@ -1,10 +1,10 @@
 #ifndef VECTOR_HPP
 #define VECTOR_HPP
 
-#include <stdexcept>
 #include <cstddef>
 #include <array>
 #include <cmath>
+#include <numbers>
 
 namespace LA
 {
@@ -141,11 +141,30 @@ namespace LA
 	constexpr double abs(double value) { return value < 0.0 ? -value : value; }
 
 	template <size_t N>
-	constexpr bool isNullVec(const Vec<N>& vec)
+	constexpr Vec<N> normalize(const Vec<N>& v)
 	{
-		for (size_t idx{ 0 }; idx < vec.size(); ++idx)
+		if (isNullVec(v))
 		{
-			const float comp{ vec[idx] };
+			return Vec<N>(NAN);
+		}
+
+		const float length{ v.length() };
+		Vec<N> result{};
+
+		for (size_t idx{ 0 }; idx < v.size(); ++idx)
+		{
+			result[idx] = v[idx] / length;
+		}
+
+		return result;
+	}
+
+	template <size_t N>
+	constexpr bool isNullVec(const Vec<N>& v)
+	{
+		for (size_t idx{ 0 }; idx < v.size(); ++idx)
+		{
+			const float comp{ v[idx] };
 
 			if (abs(comp) > FLT_EPSILON)
 			{
@@ -157,16 +176,47 @@ namespace LA
 	}
 
 	template <size_t N>
-	constexpr float dot(const Vec<N>& vec1, const Vec<N>& vec2)
+	constexpr float dot(const Vec<N>& v1, const Vec<N>& v2)
 	{
 		float dot{ 0.0f };
 
-		for (size_t idx{ 0 }; idx < vec1.size(); ++idx)
+		for (size_t idx{ 0 }; idx < v1.size(); ++idx)
 		{
-			dot += vec1[idx] * vec2[idx];
+			dot += v1[idx] * v2[idx];
 		}
 
 		return dot;
+	}
+
+	Vec3 cross(const Vec3& v1, const Vec3& v2)
+	{
+		return Vec3
+		{
+			v1.y * v2.z - v1.z * v2.y,
+			v1.z * v2.x - v1.x * v2.z,
+			v1.x * v2.y - v1.y * v2.x
+		};
+	}
+
+	constexpr float radians(float angle)
+	{
+		const float pi{ static_cast<float>(std::numbers::pi) };
+		
+		return pi * angle / 180.0f;
+	}
+
+	template <size_t N>
+	constexpr float cos(const Vec<N>& v1, const Vec<N>& v2)
+	{
+		return dot(normalize(v1), normalize(v2));
+	}
+
+	template <size_t N>
+	constexpr float sin(const Vec<N>& v1, const Vec<N>& v2)
+	{
+		const float c{ cos(v1, v2) };
+
+		return std::sqrt(1.0f - c * c);
 	}
 
 	constexpr float Vec<2>::length() const { return std::sqrt(dot(*this, *this)); }
