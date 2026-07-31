@@ -1,0 +1,12 @@
+Build/
+bin/
+obj/
+x64/
+Debug/
+Release/
+GeneratedFiles/
+.vs/
+
+*.vcxproj.user
+*.suo
+*.user
