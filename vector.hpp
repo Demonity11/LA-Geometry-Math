@@ -11,6 +11,10 @@ namespace LA
 	template <size_t N>
 	struct Vec;
 
+	// forward declaration
+	template <size_t N>
+	constexpr float dot(const Vec<N>& v1, const Vec<N>& v2);
+
 	template <>
 	struct Vec<2>
 	{
@@ -20,15 +24,15 @@ namespace LA
 			struct { float x, y; };
 		};
 
-		Vec<2>(float n) : x{ n }, y{ n } {}
-		Vec<2>(float xP, float yP) : x{ xP }, y{ yP } {}
-		Vec<2>() : x{ 0.0f }, y{ 0.0f } {}
+		constexpr Vec<2>() : x{ 0.0f }, y{ 0.0f } {}
+		constexpr explicit Vec<2>(float n) : x{ n }, y{ n } {}
+		constexpr explicit Vec<2>(float xP, float yP) : x{ xP }, y{ yP } {}
 
 		constexpr float& operator[](size_t idx) { return data[idx]; }
 		constexpr const float& operator[](size_t idx) const { return data[idx]; }
-		static constexpr size_t size() { return 2; }
+		Vec<2> operator-() const { return Vec<2>{ -x, -y }; }
 
-		constexpr float length() const;
+		constexpr float length() const { return dot(*this, *this); }
 	};
 
 	template <>
@@ -40,15 +44,15 @@ namespace LA
 			struct { float x, y, z; };
 		};
 
-		Vec<3>(float n) : x{ n }, y{ n }, z{ n } {}
-		Vec<3>(float xP, float yP, float zP) : x{ xP }, y{ yP }, z{ zP } {}
-		Vec<3>() : x{ 0.0f }, y{ 0.0f }, z{ 0.0f } {}
+		constexpr Vec<3>() : x{ 0.0f }, y{ 0.0f }, z{ 0.0f } {}
+		constexpr explicit Vec<3>(float n) : x{ n }, y{ n }, z{ n } {}
+		constexpr explicit Vec<3>(float xP, float yP, float zP) : x{ xP }, y{ yP }, z{ zP } {}
 
 		constexpr float& operator[](size_t idx) { return data[idx]; }
 		constexpr const float& operator[](size_t idx) const { return data[idx]; }
-		static constexpr size_t size() { return 3; }
+		Vec<3> operator-() const { return Vec<3>{ -x, -y, -z }; }
 
-		constexpr float length() const;
+		constexpr float length() const { return dot(*this, *this); }
 	};
 
 	template <>
@@ -60,15 +64,15 @@ namespace LA
 			struct { float x, y, z, w; };
 		};
 
-		Vec<4>(float n) : x{ n }, y{ n }, z{ n }, w{ n } {}
-		Vec<4>(float xP, float yP, float zP, float wP) : x{ xP }, y{ yP }, z{ zP }, w{ wP } {}
-		Vec<4>() : x{ 0.0f }, y{ 0.0f }, z{ 0.0f }, w{ 0.0f } {}
+		constexpr Vec<4>() : x{ 0.0f }, y{ 0.0f }, z{ 0.0f }, w{ 0.0f } {}
+		constexpr explicit Vec<4>(float n) : x{ n }, y{ n }, z{ n }, w{ n } {}
+		constexpr explicit Vec<4>(float xP, float yP, float zP, float wP) : x{ xP }, y{ yP }, z{ zP }, w{ wP } {}
 
 		constexpr float& operator[](size_t idx) { return data[idx]; }
 		constexpr const float& operator[](size_t idx) const { return data[idx]; }
-		static constexpr size_t size() { return 4; }
+		Vec<4> operator-() const { return Vec<4>{ -x, -y, -z, -w }; }
 
-		constexpr float length() const;
+		constexpr float length() const { return dot(*this, *this); }
 	};
 
 	using Vec2 = Vec<2>;
@@ -80,7 +84,7 @@ namespace LA
 	{
 		Vec<N> result{};
 
-		for (size_t idx{ 0 }; idx < result.size(); ++idx)
+		for (size_t idx{ 0 }; idx < N; ++idx)
 		{
 			result[idx] = v1[idx] + v1[idx];
 		}
@@ -93,7 +97,7 @@ namespace LA
 	{
 		Vec<N> result{};
 
-		for (size_t idx{ 0 }; idx < result.size(); ++idx)
+		for (size_t idx{ 0 }; idx < N; ++idx)
 		{
 			result[idx] = v1[idx] - v1[idx];
 		}
@@ -106,7 +110,7 @@ namespace LA
 	{
 		Vec<N> result{};
 
-		for (size_t idx{ 0 }; idx < result.size(); ++idx)
+		for (size_t idx{ 0 }; idx < N; ++idx)
 		{
 			result[idx] = f * v[idx];
 		}
@@ -128,7 +132,7 @@ namespace LA
 
 		Vec<N> result{};
 
-		for (size_t idx{ 0 }; idx < result.size(); ++idx)
+		for (size_t idx{ 0 }; idx < N; ++idx)
 		{
 			result[idx] = v[idx] / f;
 		}
@@ -143,15 +147,16 @@ namespace LA
 	template <size_t N>
 	constexpr Vec<N> normalize(const Vec<N>& v)
 	{
-		if (isNullVec(v))
+		const float length{ v.length() };
+
+		if (length < FLT_EPSILON)
 		{
-			return Vec<N>(NAN);
+			return Vec<N>(0.0f);
 		}
 
-		const float length{ v.length() };
 		Vec<N> result{};
 
-		for (size_t idx{ 0 }; idx < v.size(); ++idx)
+		for (size_t idx{ 0 }; idx < N; ++idx)
 		{
 			result[idx] = v[idx] / length;
 		}
@@ -160,27 +165,11 @@ namespace LA
 	}
 
 	template <size_t N>
-	constexpr bool isNullVec(const Vec<N>& v)
-	{
-		for (size_t idx{ 0 }; idx < v.size(); ++idx)
-		{
-			const float comp{ v[idx] };
-
-			if (abs(comp) > FLT_EPSILON)
-			{
-				return false;
-			}
-		}
-
-		return true;
-	}
-
-	template <size_t N>
 	constexpr float dot(const Vec<N>& v1, const Vec<N>& v2)
 	{
 		float dot{ 0.0f };
 
-		for (size_t idx{ 0 }; idx < v1.size(); ++idx)
+		for (size_t idx{ 0 }; idx < N; ++idx)
 		{
 			dot += v1[idx] * v2[idx];
 		}
@@ -188,7 +177,7 @@ namespace LA
 		return dot;
 	}
 
-	Vec3 cross(const Vec3& v1, const Vec3& v2)
+	constexpr Vec3 cross(const Vec3& v1, const Vec3& v2)
 	{
 		return Vec3
 		{
@@ -218,10 +207,6 @@ namespace LA
 
 		return std::sqrt(1.0f - c * c);
 	}
-
-	constexpr float Vec<2>::length() const { return std::sqrt(dot(*this, *this)); }
-	constexpr float Vec<3>::length() const { return std::sqrt(dot(*this, *this)); }
-	constexpr float Vec<4>::length() const { return std::sqrt(dot(*this, *this)); }
 }
 
 #endif
