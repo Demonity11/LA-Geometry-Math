@@ -1,4 +1,5 @@
 #include "vector.hpp"
+#include <array>
 
 namespace LA
 {
@@ -9,7 +10,7 @@ namespace LA
 	struct Mat<2>
 	{
 	public:
-		constexpr Mat<2>() : m_data { Vec2{ 1.0f, 0.0f }, Vec2{ 0.0f, 1.0f }} {}
+		constexpr Mat<2>() : m_data { Vec2{ 1.0f, 0.0f }, Vec2{ 0.0f, 1.0f } } {}
 		constexpr explicit Mat<2>(float scalar) : m_data{ Vec2{ scalar, 0.0f }, Vec2{ 0.0f, scalar } } {}
 		constexpr explicit Mat<2>(const Vec2& col0, const Vec2& col1) : m_data{ col0, col1 } {}
 		constexpr explicit Mat<2>(float x0, float y0, float x1, float y1) : m_data { Vec2{ x0, y0 }, Vec2{ x1, y1 } } {}
@@ -85,6 +86,16 @@ namespace LA
 		}
 
 		return result;
+	}
+
+	constexpr Mat3 crossMatrix(const Vec3& v)
+	{
+		return Mat3
+		{
+			Vec3{  0.0f, v.z, -v.y },
+			Vec3{ -v.z,  0.0f, v.x },
+			Vec3{  v.y, -v.x,  0.0f }
+		};
 	}
 
 	template <size_t N>
@@ -170,9 +181,71 @@ namespace LA
 
 		for (size_t i{ 1 }; i < N; ++i)
 		{
-			result += (m[i] * v[i]);
+			result = result + (m[i] * v[i]);
 		}
 
 		return result;
+	}
+
+	constexpr Mat3 rotate(float angleRadians, const Vec3& axis)
+	{
+		const Vec3 n{ normalize(axis) };
+		const float cos{ std::cos(angleRadians) };
+		const float sin{ std::sin(angleRadians) };
+
+		const float oneMinusCos{ 1.0f - cos };
+
+		const Vec3 p
+		{ 
+			n.x * n.x * oneMinusCos + cos,
+			n.x * n.y * oneMinusCos + n.z * sin,
+			n.x * n.z * oneMinusCos - n.y * sin
+		};
+
+		const Vec3 q
+		{
+			n.x * n.y * oneMinusCos - n.z * sin,
+			n.y * n.y * oneMinusCos + cos,
+			n.y * n.z * oneMinusCos + n.x * sin
+		};
+
+		const Vec3 r
+		{
+			n.x * n.z * oneMinusCos + n.y * sin,
+			n.y * n.z * oneMinusCos - n.x * sin,
+			n.z * n.z * oneMinusCos + cos
+		};
+
+		return Mat3{ p, q, r };
+	}
+
+	constexpr Mat3 scale(float factor, const Vec3& direction)
+	{
+		const Vec3 n{ normalize(direction) };
+
+		const float factorMinusOne{ factor - 1.0f };
+
+		const Vec3 p
+		{
+			1.0f + factorMinusOne * n.x * n.x,
+			factorMinusOne * n.x * n.y,
+			factorMinusOne * n.x * n.z
+		};
+
+		const Vec3 q
+		{
+			factorMinusOne * n.x * n.y,
+			1.0f + factorMinusOne * n.y * n.y,
+			factorMinusOne * n.y * n.z
+		};
+
+		const Vec3 r
+		{
+			factorMinusOne * n.x * n.z,
+			factorMinusOne * n.y * n.z,
+			1.0f + factorMinusOne * n.z * n.z
+		};
+
+		return Mat3{ p, q, r };
 	}
 }
