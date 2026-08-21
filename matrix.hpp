@@ -1,7 +1,7 @@
 #include "vector.hpp"
 #include <array>
 
-namespace LA
+namespace la
 {
 	template <size_t N>
 	struct Mat;
@@ -71,6 +71,31 @@ namespace LA
 	using Mat2 = Mat<2>;
 	using Mat3 = Mat<3>;
 	using Mat4 = Mat<4>;
+
+	template <size_t N>
+	void printMatrix(const Mat<N>& m)
+	{
+		for (size_t i{ 0 }; i < N; ++i)
+		{
+			std::cout << "|";
+
+			for (size_t j{ 0 }; j < N; ++j)
+			{
+				if (j == N - 1)
+				{
+					std::cout << std::right; std::cout.width(10);
+				}
+				else
+				{
+					std::cout << std::left; std::cout.width(10);
+				}
+
+				std::cout << m[j][i];
+			}
+
+			std::cout << "|\n";
+		}
+	}
 
 	template <size_t N>
 	constexpr Mat<N> transpose(const Mat<N>& m)
@@ -175,6 +200,7 @@ namespace LA
 	}
 
 	template <size_t N>
+	requires (N >= 2 && N <= 4)
 	constexpr Vec<N> operator*(const Mat<N>& m, const Vec<N>& v)
 	{
 		Vec<N> result{ m[0] * v[0] };
@@ -185,6 +211,65 @@ namespace LA
 		}
 
 		return result;
+	}
+
+	template <size_t N>
+	requires (N >= 2 && N <= 4)
+	constexpr float determinant(const Mat<N>& m)
+	{
+		if constexpr (N == 2)
+		{
+			return m[0][0] * m[1][1] - (m[1][0] * m[0][1]);
+		}
+		else if constexpr (N == 3)
+		{
+			return
+				m[0][0] * (m[1][1] * m[2][2] - m[2][1] * m[1][2]) +
+				m[1][0] * (m[2][1] * m[0][2] - m[0][1] * m[2][2]) +
+				m[2][0] * (m[0][1] * m[1][2] - m[1][1] * m[0][2]);
+		}
+		else if constexpr (N == 4)
+		{
+			return
+				m[0][0] * (m[1][1] * (m[2][2] * m[3][3] - m[3][2] * m[2][3]) + m[2][1] * (m[3][2] * m[1][3] - m[1][2] * m[3][3]) + m[3][1] * (m[1][2] * m[2][3] - m[2][2] * m[1][3])) -
+				m[1][0] * (m[0][1] * (m[2][2] * m[3][3] - m[3][2] * m[2][3]) + m[2][1] * (m[3][2] * m[0][3] - m[0][2] * m[3][3]) + m[3][1] * (m[0][2] * m[2][3] - m[2][2] * m[0][3])) +
+				m[2][0] * (m[0][1] * (m[1][2] * m[3][3] - m[3][2] * m[1][3]) + m[1][1] * (m[3][2] * m[0][3] - m[0][2] * m[3][3]) + m[3][1] * (m[0][2] * m[1][3] - m[1][2] * m[0][3])) -
+				m[3][0] * (m[0][1] * (m[1][2] * m[2][3] - m[2][2] * m[1][3]) + m[1][1] * (m[2][2] * m[0][3] - m[0][2] * m[2][3]) + m[2][1] * (m[0][2] * m[1][3] - m[1][2] * m[0][3]));
+		}
+	}
+
+	template <size_t N>
+	requires (N >= 2 && N <= 4)
+	constexpr float cofactor(const Mat<N>& m, size_t row, size_t col)
+	{
+		if constexpr (N == 2)
+		{
+			float minorVal{ m[(col == 0) ? 1 : 0][(row == 0) ? 1 : 0] };
+
+			return ((row + col) % 2 == 0) ? minorVal : -minorVal;
+		}
+
+		else
+		{
+			using SubMat = Mat<N - 1>;
+
+			SubMat minor{};
+
+			for (size_t c{ 0 }; c < N - 1; ++c)
+			{
+				for (size_t r{ 0 }; r < N - 1; ++r)
+				{
+					size_t srcCol{ (c >= col) ? c + 1 : c };
+					size_t srcRow{ (r >= row) ? r + 1 : r };
+
+					minor[c][r] = m[srcCol][srcRow];
+				}
+			}
+
+			float det{ determinant(minor) };
+
+			return ((row + col) % 2 == 0) ? det : -det;
+		}
 	}
 
 	constexpr Mat3 rotate(float angleRadians, const Vec3& axis)

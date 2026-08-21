@@ -1,130 +1,57 @@
 #include <print>
 #include "vector.hpp"
 #include "matrix.hpp"
-#include <iostream>
-
-template <size_t N>
-void printMatrix(const LA::Mat<N>& m)
-{
-	for (size_t i{ 0 }; i < N; ++i)
-	{
-		std::cout << "|";
-
-		for (size_t j{ 0 }; j < N; ++j)
-		{
-			std::cout << m[j][i];
-
-			if (j != N - 1)
-			{
-				std::cout << " ";
-			}
-		}
-
-		std::cout << "|\n";
-	}
-}
-
-template <size_t N>
-void printVector(const LA::Vec<N>& v)
-{
-	std::cout << "(";
-
-	for (size_t i{ 0 }; i < N; ++i)
-	{
-		std::cout << v[i];
-
-		if (i != N - 1)
-		{
-			std::cout << ", ";
-		}
-	}
-
-	std::cout << ")\n";
-}
 
 int main()
 {
-	//std::println("{}", LA::abs(-DBL_MIN));
-	//std::println("{}", LA::abs(DBL_MIN));
-	//std::println("{}", LA::abs(-FLT_MIN));
-	//std::println("{}", LA::abs(FLT_MIN));
-	//std::println("{}", LA::abs(-2));
+	la::Mat3 rotation{ la::rotate(la::radians(-15.0f), la::Vec3{0.267f, -0.535f, 0.802f})};
+	la::printMatrix(rotation);
 
-	//LA::Vec2 dividend{ 2.0f, 2.0f };
-	//LA::Vec2 vec{ dividend / 0.0f };
-
-	//LA::Vec2 dividendNormalized{ LA::normalize(dividend) };
-	//LA::Vec2 null{ LA::normalize(LA::Vec2{0.0f, 0.0f}) };
-
-	//std::println("{}, {}", vec.x, vec.y);
-
-	//std::println("{}", dividend.length());
-
-	//std::println("{}, {}", dividendNormalized.x, dividendNormalized.y);
-
-	//std::println("{}, {}", null.x, null.y);
-
-	//LA::Vec3 cross1{ LA::cross(LA::Vec3{ 1,2,3 }, LA::Vec3{ -3,1,2 }) };
-	//LA::Vec3 cross2{ LA::cross(LA::Vec3{ -3,1,2 }, LA::Vec3{ 1,2,3 }) };
-
-	//std::println("cross1 = ({}, {}, {})", cross1.x, cross1.y, cross1.z);
-	//std::println("cross2 = ({}, {}, {})", cross2.x, cross2.y, cross2.z);
-
-	//LA::Mat2 m1{ 1.0f, 2.0f, 3.0f, 4.0f };
-	//LA::Mat2 m2{ 5.0f, 6.0f, 7.0f, 8.0f };
-
-	//LA::Mat2 mult{ m1 * m2 };
-
-	//LA::Mat2 m1T{ transpose(m1) };
-	//
-	//printMatrix(m1);
-
-	//std::cout << "\n*\n\n";
-
-	//printMatrix(m2);
-
-	//std::cout << "\n=\n\n";
-
-	//printMatrix(mult);
-
-	//LA::Vec4 v{ 0.0f, 1.0f, 2.0f, 3.0f };
-	//printVector(v);
-
-	//LA::Vec2 result{ m1 * LA::Vec2{ 3.0f, 2.5f } };
-
-	//LA::Vec3 a{ 1.0f, 2.0f, 3.0f };
-	//LA::Vec3 b{ 2.0f, 1.0f, -3.0f };
-
-	//LA::Vec3 crossAB{ LA::cross(a, b) };
-
-	//printVector(crossAB);
-
-	//LA::Mat3 crossMatA{ LA::crossMatrix(a) };
-
-	//printVector(crossMatA * b);
-
-	LA::Mat3 rx{ LA::rotate(LA::radians(30.0f), LA::Vec3{ 1.0f, 0.0f, 0.0f }) };
-	LA::Mat3 ry{ LA::rotate(LA::radians(30.0f), LA::Vec3{ 0.0f, 1.0f, 0.0f }) };
-	LA::Mat3 rz{ LA::rotate(LA::radians(30.0f), LA::Vec3{ 0.0f, 0.0f, 1.0f }) };
-
-	printMatrix(rx);
 	std::cout << "\n\n";
 
-	printMatrix(ry);
+	la::Mat3 scale{ la::scale(5.0f, la::Vec3{0.267f, -0.535f, 0.802f}) };
+	la::printMatrix(scale);
+
 	std::cout << "\n\n";
 
-	printMatrix(rz);
+	la::Mat3 projection{ la::scale(0.0f, la::Vec3{0.267f, -0.535f, 0.802f}) };
+	la::printMatrix(projection);
+
 	std::cout << "\n\n";
 
-	LA::Mat3 sx{ LA::scale(3.0f, LA::Vec3{ 1.0f, 0.0f, 0.0f }) };
-	LA::Mat3 sy{ LA::scale(3.0f, LA::Vec3{ 0.0f, 1.0f, 0.0f }) };
-	LA::Mat3 sz{ LA::scale(3.0f, LA::Vec3{ 0.0f, 0.0f, 1.0f }) };
+	la::Mat3 reflection{ la::scale(-1.0f, la::Vec3{0.267f, -0.535f, 0.802f}) };
+	la::printMatrix(reflection);
 
-	printMatrix(sx);
 	std::cout << "\n\n";
 
-	printMatrix(sy);
-	std::cout << "\n\n";
+	la::Mat3 ry{ la::rotate(la::radians(-30.0f), la::Vec3{ 0.0f, 1.0f, 0.0f }) };
+	la::Mat3 rx{ la::rotate(la::radians(22.0f), la::Vec3{ 1.0f, 0.0f, 0.0f }) };
+	la::Mat3 result{ ry * rx };
 
-	printMatrix(sz);
+	la::printMatrix(result);
+
+	la::Mat3 det
+	{ 
+		3.0f, -1.0f, 5.0f, 
+		1.0f, 2.0f, -3.0f, 
+		2.0f, 6.0f, 1.0f 
+	};
+
+	std::cout << la::determinant(det) << "\n";
+
+	std::cout << la::cofactor(det, 0, 0) << "\n";
+	std::cout << la::cofactor(det, 0, 1) << "\n";
+
+	la::Mat4 det4x4
+	{
+		3.0f, -1.0f, 5.0f, 3.0f,
+		1.0f, 2.0f, -3.0f, -2.0f,
+		2.0f, 6.0f, 1.0f, 0.0f,
+		3.0f, -1.0f, 0.0f, 4.0f
+	};
+
+	la::printMatrix(det4x4);
+	std::cout << "\n";
+
+	std::cout << la::determinant(det4x4) << "\n";
 }

@@ -6,8 +6,9 @@
 #include <cfloat>
 #include <numbers>
 #include <algorithm>
+#include <iostream>
 
-namespace LA
+namespace la
 {
 	template <size_t N>
 	struct Vec;
@@ -121,6 +122,24 @@ namespace LA
 	using Vec4 = Vec<4>;
 
 	template <size_t N>
+	void printVector(const Vec<N>& v)
+	{
+		std::cout << "(";
+
+		for (size_t i{ 0 }; i < N; ++i)
+		{
+			std::cout << v[i];
+
+			if (i != N - 1)
+			{
+				std::cout << ", ";
+			}
+		}
+
+		std::cout << ")\n";
+	}
+
+	template <size_t N>
 	constexpr Vec<N> operator+(const Vec<N>& v1, const Vec<N>& v2)
 	{
 		Vec<N> result{};
@@ -166,6 +185,19 @@ namespace LA
 	}
 
 	template <size_t N>
+	constexpr Vec<N> operator*(const Vec<N>& v1, const Vec<N>& v2)
+	{
+		Vec<N> result{};
+
+		for (size_t idx{ 0 }; idx < N; ++idx)
+		{
+			result[idx] = v1[idx] * v2[idx];
+		}
+
+		return result;
+	}
+
+	template <size_t N>
 	constexpr Vec<N> operator/(const Vec<N>& v, float scalar)
 	{
 		if (std::abs(scalar) < FLT_EPSILON)
@@ -174,6 +206,24 @@ namespace LA
 		float invScalar{ 1.0f / scalar };
 
 		return v * invScalar;
+	}
+
+	template <size_t N>
+	constexpr Vec<N> operator/(const Vec<N>& v1, const Vec<N>& v2)
+	{
+		Vec<N> result{};
+
+		for (size_t idx{ 0 }; idx < N; ++idx)
+		{
+			if (std::abs(v2[idx]) < FLT_EPSILON)
+			{
+				return Vec<N>(std::numeric_limits<float>::quiet_NaN());
+			}
+
+			result[idx] = v1[idx] / v2[idx];
+		}
+
+		return result;
 	}
 
 	template <size_t N>
@@ -224,7 +274,9 @@ namespace LA
 		return dot;
 	}
 
-	constexpr Vec3 cross(const Vec3& v1, const Vec3& v2)
+	template <size_t N>
+	requires (N == 3)
+	constexpr Vec3 cross(const Vec<N>& v1, const Vec<N>& v2)
 	{
 		return Vec3
 		{
@@ -236,7 +288,7 @@ namespace LA
 
 	constexpr float radians(float angle)
 	{
-		const float pi{ static_cast<float>(std::numbers::pi) };
+		constexpr float pi{ static_cast<float>(std::numbers::pi) };
 		
 		return pi * angle / 180.0f;
 	}
@@ -253,6 +305,20 @@ namespace LA
 		const float c{ std::clamp(cos(v1, v2), -1.0f, 1.0f) };
 
 		return std::sqrt(1.0f - c * c);
+	}
+
+	template <size_t N>
+	constexpr bool equal(const Vec<N>& v1, const Vec<N>& v2)
+	{
+		for (size_t idx{ 0 }; idx < N; ++idx)
+		{
+			if (std::abs(v1[idx] - v2[idx]) < FLT_EPSILON)
+			{
+				return false;
+			}
+		}
+
+		return true;
 	}
 }
 
