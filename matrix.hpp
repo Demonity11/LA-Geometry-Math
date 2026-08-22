@@ -308,6 +308,52 @@ namespace la
 		return invDet * adj;
 	}
 
+	template<size_t N>
+	requires (N == 2 || N == 3)
+	constexpr Mat<N> orthogonalize(const Mat<N>& m)
+	{
+		constexpr auto proj = [](const Vec<N>& a, const Vec<N>& b) -> Vec<N>
+			{
+				if (equal(b, Vec<N>{ 0.0f }))
+				{
+					return Vec<N>(std::numeric_limits<float>::quiet_NaN());
+				}
+
+				const float invSquaredLength{ 1.0f / b.lengthSquared() };
+
+				return Vec<N>{ dot(a, b) * invSquaredLength * b };
+			};
+
+		constexpr float k{ 0.5f };
+
+		Mat<N> result{ m };
+
+		if constexpr (N == 2)
+		{
+			for (int num{ 0 }; num < 10; ++num)
+			{
+				Mat<N> prev{ result };
+
+				result[0] = normalize(prev[0] - (k * proj(prev[0], prev[1])));
+				result[1] = normalize(prev[1] - (k * proj(prev[1], prev[0])));
+			}
+		}
+
+		if constexpr (N == 3)
+		{
+			for (int num{ 0 }; num < 10; ++num)
+			{
+				Mat<N> prev{ result };
+
+				result[0] = normalize(prev[0] - (k * proj(prev[0], prev[1])) - (k * proj(prev[0], prev[2])));
+				result[1] = normalize(prev[1] - (k * proj(prev[1], prev[0])) - (k * proj(prev[1], prev[2])));
+				result[2] = normalize(prev[2] - (k * proj(prev[2], prev[0])) - (k * proj(prev[2], prev[1])));
+			}
+		}
+
+		return result;
+	}
+
 	constexpr Mat3 rotate(float angleRadians, const Vec3& axis)
 	{
 		const Vec3 n{ normalize(axis) };
