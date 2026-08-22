@@ -317,7 +317,7 @@ namespace la
 	{
 		for (size_t idx{ 0 }; idx < N; ++idx)
 		{
-			if (std::abs(v1[idx] - v2[idx]) < FLT_EPSILON)
+			if (std::abs(v1[idx] - v2[idx]) > FLT_EPSILON)
 			{
 				return false;
 			}

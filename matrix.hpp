@@ -369,4 +369,21 @@ namespace la
 
 		return Mat3{ p, q, r };
 	}
+
+	template <size_t N>
+	constexpr bool equal(const Mat<N>& m1, const Mat<N>& m2)
+	{
+		for (size_t c{ 0 }; c < N; ++c)
+		{
+			for (size_t r{ 0 }; r < N; ++r)
+			{
+				if (std::abs(m1[c][r] - m2[c][r]) > FLT_EPSILON)
+				{
+					return false;
+				}
+			}
+		}
+
+		return true;
+	}
 }
