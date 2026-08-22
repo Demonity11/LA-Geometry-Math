@@ -72,29 +72,32 @@ namespace la
 	using Mat3 = Mat<3>;
 	using Mat4 = Mat<4>;
 
+	// overload operator<< to print matrices
 	template <size_t N>
-	void printMatrix(const Mat<N>& m)
+	std::ostream& operator<<(std::ostream& out, const Mat<N>& m)
 	{
 		for (size_t i{ 0 }; i < N; ++i)
 		{
-			std::cout << "|";
+			out << "|";
 
 			for (size_t j{ 0 }; j < N; ++j)
 			{
 				if (j == N - 1)
 				{
-					std::cout << std::right; std::cout.width(10);
+					out << std::right; out.width(10);
 				}
 				else
 				{
-					std::cout << std::left; std::cout.width(10);
+					out << std::left; out.width(10);
 				}
 
-				std::cout << m[j][i];
+				out << m[j][i];
 			}
 
-			std::cout << "|\n";
+			out << "|\n";
 		}
+
+		return out;
 	}
 
 	template <size_t N>
@@ -270,6 +273,39 @@ namespace la
 
 			return ((row + col) % 2 == 0) ? det : -det;
 		}
+	}
+
+	template <size_t N>
+	constexpr Mat<N> adjoint(const Mat<N>& m)
+	{
+		Mat<N> result{};
+
+		for (size_t c{ 0 }; c < N; ++c)
+		{
+			for (size_t r{ 0 }; r < N; ++r)
+			{
+				result[c][r] = cofactor(m, r, c);
+			}
+		}
+
+		return transpose(result);
+	}
+
+	template <size_t N>
+	constexpr Mat<N> inverse(const Mat<N>& m)
+	{
+		float det{ determinant(m) };
+
+		if (std::abs(det) < FLT_EPSILON)
+		{
+			return Mat<N>(std::numeric_limits<float>::quiet_NaN());
+		}
+
+		float invDet{ 1.0f / det };
+
+		Mat<N> adj{ adjoint(m) };
+
+		return invDet * adj;
 	}
 
 	constexpr Mat3 rotate(float angleRadians, const Vec3& axis)

@@ -10,6 +10,8 @@
 
 namespace la
 {
+	using size_t = std::size_t;
+
 	template <size_t N>
 	struct Vec;
 
@@ -121,22 +123,25 @@ namespace la
 	using Vec3 = Vec<3>;
 	using Vec4 = Vec<4>;
 
+	// overload operator<< to print vectors
 	template <size_t N>
-	void printVector(const Vec<N>& v)
+	std::ostream& operator<<(std::ostream& out, const Vec<N>& v)
 	{
-		std::cout << "(";
+		out << "(";
 
 		for (size_t i{ 0 }; i < N; ++i)
 		{
-			std::cout << v[i];
+			out << v[i];
 
 			if (i != N - 1)
 			{
-				std::cout << ", ";
+				out << ", ";
 			}
 		}
 
-		std::cout << ")\n";
+		out << ")\n";
+
+		return out;
 	}
 
 	template <size_t N>
