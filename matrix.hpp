@@ -74,7 +74,7 @@ namespace la
 
 	// overload operator<< to print matrices
 	template <size_t N>
-	std::ostream& operator<<(std::ostream& out, const Mat<N>& m)
+	inline std::ostream& operator<<(std::ostream& out, const Mat<N>& m)
 	{
 		for (size_t i{ 0 }; i < N; ++i)
 		{
@@ -294,14 +294,14 @@ namespace la
 	template <size_t N>
 	constexpr Mat<N> inverse(const Mat<N>& m)
 	{
-		float det{ determinant(m) };
+		const float det{ determinant(m) };
 
 		if (std::abs(det) < FLT_EPSILON)
 		{
 			return Mat<N>(std::numeric_limits<float>::quiet_NaN());
 		}
 
-		float invDet{ 1.0f / det };
+		const float invDet{ 1.0f / det };
 
 		Mat<N> adj{ adjoint(m) };
 
@@ -314,7 +314,7 @@ namespace la
 	{
 		constexpr auto proj = [](const Vec<N>& a, const Vec<N>& b) -> Vec<N>
 			{
-				if (equal(b, Vec<N>{ 0.0f }))
+				if (b == Vec<N>{ 0.0f })
 				{
 					return Vec<N>(std::numeric_limits<float>::quiet_NaN());
 				}
@@ -354,7 +354,7 @@ namespace la
 		return result;
 	}
 
-	constexpr Mat3 rotate(float angleRadians, const Vec3& axis)
+	constexpr Mat4 rotate(float angleRadians, const Vec3& axis)
 	{
 		const Vec3 n{ normalize(axis) };
 		const float cos{ std::cos(angleRadians) };

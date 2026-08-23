@@ -54,6 +54,7 @@ namespace la
 		constexpr Vec<3>() = default;
 		constexpr explicit Vec<3>(float n) : x{ n }, y{ n }, z{ n } {}
 		constexpr explicit Vec<3>(float xP, float yP, float zP) : x{ xP }, y{ yP }, z{ zP } {}
+		constexpr explicit Vec<3>(const Vec<2>& v, float zP) : x{ v.x }, y{ v.y }, z{ zP } {}
 
 		constexpr float& operator[](size_t idx)
 		{
@@ -91,6 +92,7 @@ namespace la
 		constexpr Vec<4>() = default;
 		constexpr explicit Vec<4>(float n) : x{ n }, y{ n }, z{ n }, w{ n } {}
 		constexpr explicit Vec<4>(float xP, float yP, float zP, float wP) : x{ xP }, y{ yP }, z{ zP }, w{ wP } {}
+		constexpr explicit Vec<4>(const Vec<2>& v1, const Vec<2>& v2) : x{ v1.x }, y{ v1.y }, z{ v2.x }, w{ v2.y } {}
 
 		constexpr float& operator[](size_t idx)
 		{
@@ -125,7 +127,7 @@ namespace la
 
 	// overload operator<< to print vectors
 	template <size_t N>
-	std::ostream& operator<<(std::ostream& out, const Vec<N>& v)
+	inline std::ostream& operator<<(std::ostream& out, const Vec<N>& v)
 	{
 		out << "(";
 
@@ -234,9 +236,11 @@ namespace la
 	template <size_t N>
 	constexpr bool operator==(const Vec<N>& v1, const Vec<N>& v2)
 	{
+		constexpr float epsilon{ 0.00001f };
+
 		for (size_t i{ 0 }; i < N; ++i)
 		{
-			if (std::abs(v1[i] - v2[i]) > FLT_EPSILON)
+			if (std::abs(v1[i] - v2[i]) > epsilon)
 			{
 				return false;
 			}

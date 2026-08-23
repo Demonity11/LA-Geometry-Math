@@ -34,5 +34,7 @@ int main()
 
 	std::cout << std::boolalpha << la::equal(la::Vec2{ 1.0f }, la::Vec2{ 1.0f }) << "\n";
 	std::cout << std::boolalpha << la::equal(det3x3, det3x3) << "\n";
-	std::cout << std::boolalpha << la::equal(det3x3, la::Mat3{ 1.0f }) << "\n";
+	std::cout << std::boolalpha << la::equal(det3x3, la::Mat3{ 1.0f }) << "\n\n";
+
+	std::cout << std::boolalpha << (la::Vec2{ 1.0f } == la::Vec2{ 1.0f }) << "\n";
 }
