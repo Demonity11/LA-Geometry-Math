@@ -54,6 +54,7 @@ namespace la
 		constexpr Vec<3>() = default;
 		constexpr explicit Vec<3>(float n) : x{ n }, y{ n }, z{ n } {}
 		constexpr explicit Vec<3>(float xP, float yP, float zP) : x{ xP }, y{ yP }, z{ zP } {}
+
 		constexpr explicit Vec<3>(const Vec<2>& v, float zP) : x{ v.x }, y{ v.y }, z{ zP } {}
 
 		constexpr float& operator[](size_t idx)
@@ -92,7 +93,10 @@ namespace la
 		constexpr Vec<4>() = default;
 		constexpr explicit Vec<4>(float n) : x{ n }, y{ n }, z{ n }, w{ n } {}
 		constexpr explicit Vec<4>(float xP, float yP, float zP, float wP) : x{ xP }, y{ yP }, z{ zP }, w{ wP } {}
+
 		constexpr explicit Vec<4>(const Vec<2>& v1, const Vec<2>& v2) : x{ v1.x }, y{ v1.y }, z{ v2.x }, w{ v2.y } {}
+		constexpr explicit Vec<4>(const Vec<2>& v, float zP, float wP) : x{ v.x }, y{ v.y }, z{ zP }, w{ wP } {}
+		constexpr explicit Vec<4>(const Vec<3>& v, float wP) : x{ v.x }, y{ v.y }, z{ v.z }, w{ wP } {}
 
 		constexpr float& operator[](size_t idx)
 		{

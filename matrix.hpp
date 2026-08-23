@@ -6,6 +6,10 @@ namespace la
 	template <size_t N>
 	struct Mat;
 
+	using Mat2 = Mat<2>;
+	using Mat3 = Mat<3>;
+	using Mat4 = Mat<4>;
+
 	template <>
 	struct Mat<2>
 	{
@@ -36,6 +40,8 @@ namespace la
 						float x2, float y2, float z2) 
 			: m_data{ Vec3{ x0, y0, z0 }, Vec3{ x1, y1, z1 }, Vec3{ x2, y2, z2 } } {}
 
+		constexpr explicit Mat<3>(const Mat<4>& m);
+
 		constexpr Vec3& operator[](size_t index) { return m_data[index]; }
 		constexpr const Vec3& operator[](size_t index) const { return m_data[index]; }
 
@@ -59,6 +65,8 @@ namespace la
 			float x3, float y3, float z3, float w3)
 			: m_data{ Vec4{ x0, y0, z0, w0 }, Vec4{ x1, y1, z1, w1 }, Vec4{ x2, y2, z2, w2 }, Vec4{ x3, y3, z3, w3 } } {}
 
+		constexpr explicit Mat<4>(const Mat<3>& m);
+
 		constexpr Vec4& operator[](size_t index) { return m_data[index]; }
 		constexpr const Vec4& operator[](size_t index) const { return m_data[index]; }
 
@@ -68,9 +76,23 @@ namespace la
 		std::array<Vec4, 4> m_data{};
 	};
 
-	using Mat2 = Mat<2>;
-	using Mat3 = Mat<3>;
-	using Mat4 = Mat<4>;
+	// conversion constructors for Mat<N>
+	constexpr Mat<3>::Mat(const Mat<4>& m)
+		: m_data
+		{
+			Vec3{ m[0].x, m[0].y, m[0].z },
+			Vec3{ m[1].x, m[1].y, m[1].z },
+			Vec3{ m[2].x, m[2].y, m[2].z }
+		} {}
+
+	constexpr Mat<4>::Mat(const Mat<3>& m)
+		: m_data
+		{
+			Vec4{ m[0].x, m[0].y, m[0].z, 0.0f },
+			Vec4{ m[1].x, m[1].y, m[1].z, 0.0f },
+			Vec4{ m[2].x, m[2].y, m[2].z, 0.0f },
+			Vec4{ 0.0f, 0.0f, 0.0f, 1.0f }
+		} {}
 
 	// overload operator<< to print matrices
 	template <size_t N>
@@ -383,10 +405,10 @@ namespace la
 			n.z * n.z * oneMinusCos + cos
 		};
 
-		return Mat3{ p, q, r };
+		return Mat4{ Vec4{ p, 0.0f }, Vec4{ q, 0.0f }, Vec4{ r, 0.0f }, Vec4{ 0.0f, 0.0f, 0.0f, 1.0f } };
 	}
 
-	constexpr Mat3 scale(float factor, const Vec3& direction)
+	constexpr Mat4 scale(float factor, const Vec3& direction)
 	{
 		const Vec3 n{ normalize(direction) };
 
@@ -413,7 +435,7 @@ namespace la
 			1.0f + factorMinusOne * n.z * n.z
 		};
 
-		return Mat3{ p, q, r };
+		return Mat4{ Vec4{ p, 0.0f }, Vec4{ q, 0.0f }, Vec4{ r, 0.0f }, Vec4{ 0.0f, 0.0f, 0.0f, 1.0f } };
 	}
 
 	template <size_t N>
