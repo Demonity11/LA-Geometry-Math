@@ -15,9 +15,37 @@ namespace la
 	template <size_t N>
 	struct Vec;
 
-	// forward declaration
+	using Vec2 = Vec<2>;
+	using Vec3 = Vec<3>;
+	using Vec4 = Vec<4>;
+
+	// ===================================
+	// forward declarations for Vec<N>
+	// ===================================
+
 	template <size_t N>
-	constexpr float dot(const Vec<N>& v1, const Vec<N>& v2);
+	[[nodiscard]] constexpr Vec<N> normalize(const Vec<N>& v);
+
+	template <size_t N>
+	[[nodiscard]] constexpr float dot(const Vec<N>& v1, const Vec<N>& v2);
+
+	constexpr float radians(float angle);
+	template <size_t N>
+	[[nodiscard]] constexpr float cos(const Vec<N>& v1, const Vec<N>& v2);
+
+	template <size_t N>
+	[[nodiscard]] constexpr float sin(const Vec<N>& v1, const Vec<N>& v2);
+
+	template <size_t N>
+	[[nodiscard]] constexpr bool equal(const Vec<N>& v1, const Vec<N>& v2);
+
+	template <size_t N>
+	requires (N == 3)
+	[[nodiscard]] constexpr Vec3 cross(const Vec<N>& v1, const Vec<N>& v2);
+
+	// ===================================
+	// type definitions for Vec<N>
+	// ===================================
 
 	template <>
 	struct Vec<2>
@@ -125,11 +153,10 @@ namespace la
 		constexpr float lengthSquared() const { return dot(*this, *this); }
 	};
 
-	using Vec2 = Vec<2>;
-	using Vec3 = Vec<3>;
-	using Vec4 = Vec<4>;
+	// ===================================
+	// operator overloading for Vec<N>
+	// ===================================
 
-	// overload operator<< to print vectors
 	template <size_t N>
 	inline std::ostream& operator<<(std::ostream& out, const Vec<N>& v)
 	{
@@ -259,6 +286,10 @@ namespace la
 		return !(v1 == v2);
 	}
 
+	// ===================================
+	// function definitions for Vec<N>
+	// ===================================
+
 	template <size_t N>
 	constexpr Vec<N> normalize(const Vec<N>& v)
 	{
@@ -269,7 +300,7 @@ namespace la
 			return Vec<N>(0.0f);
 		}
 
-		const float invLength{ 1.0f / length };
+		const float invLength{ 1.0f / std::sqrt(length) };
 
 		return v * invLength;
 	}

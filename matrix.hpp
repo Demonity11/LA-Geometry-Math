@@ -10,6 +10,43 @@ namespace la
 	using Mat3 = Mat<3>;
 	using Mat4 = Mat<4>;
 
+	// ===================================
+	// forward declarations for Mat<N>
+	// ===================================
+
+	template <std::size_t N>
+	[[nodiscard]] constexpr Mat<N> transpose(const Mat<N>& m);
+
+	template <std::size_t N>
+	[[nodiscard]] constexpr float determinant(const Mat<N>& m);
+
+	template <std::size_t N>
+	[[nodiscard]] constexpr Mat<N> adjoint(const Mat<N>& m);
+
+	template <std::size_t N>
+	[[nodiscard]] constexpr Mat<N> inverse(const Mat<N>& m);
+
+	template <size_t N>
+	[[nodiscard]] constexpr bool equal(const Mat<N>& m1, const Mat<N>& m2);
+
+	template <std::size_t N>
+	requires (N == 2 || N == 3)
+	[[nodiscard]] constexpr Mat<N> orthogonalize(const Mat<N>& m);
+
+	template <std::size_t N>
+	requires (N >= 2 && N <= 4)
+	[[nodiscard]] constexpr float cofactor(const Mat<N>& m, std::size_t row, std::size_t col);
+
+	[[nodiscard]] constexpr Mat4 rotate(float angleRadians, const Vec3& axis);
+
+	[[nodiscard]] constexpr Mat4 scale(float factor, const Vec3& direction);
+
+	[[nodiscard]] constexpr Mat3 crossMatrix(const Vec3& v);
+
+	// ===================================
+	// type definitions for Mat<N>
+	// ===================================
+
 	template <>
 	struct Mat<2>
 	{
@@ -22,7 +59,7 @@ namespace la
 		constexpr Vec2& operator[](size_t index) { return m_data[index]; }
 		constexpr const Vec2& operator[](size_t index) const { return m_data[index]; }
 
-		Mat<2> operator-() const { return Mat<2>{ -m_data[0], -m_data[1] }; }
+		constexpr Mat<2> operator-() const { return Mat<2>{ -m_data[0], -m_data[1] }; }
 
 	private:
 		std::array<Vec2, 2> m_data{};
@@ -45,7 +82,7 @@ namespace la
 		constexpr Vec3& operator[](size_t index) { return m_data[index]; }
 		constexpr const Vec3& operator[](size_t index) const { return m_data[index]; }
 
-		Mat<3> operator-() const { return Mat<3>{ -m_data[0], -m_data[1], -m_data[2] }; }
+		constexpr Mat<3> operator-() const { return Mat<3>{ -m_data[0], -m_data[1], -m_data[2] }; }
 
 	private:
 		std::array<Vec3, 3> m_data{};
@@ -70,13 +107,16 @@ namespace la
 		constexpr Vec4& operator[](size_t index) { return m_data[index]; }
 		constexpr const Vec4& operator[](size_t index) const { return m_data[index]; }
 
-		Mat<4> operator-() const { return Mat<4>{ -m_data[0], -m_data[1], -m_data[2], -m_data[3] }; }
+		constexpr Mat<4> operator-() const { return Mat<4>{ -m_data[0], -m_data[1], -m_data[2], -m_data[3] }; }
 
 	private:
 		std::array<Vec4, 4> m_data{};
 	};
 
+	// ===================================
 	// conversion constructors for Mat<N>
+	// ===================================
+
 	constexpr Mat<3>::Mat(const Mat<4>& m)
 		: m_data
 		{
@@ -94,7 +134,10 @@ namespace la
 			Vec4{ 0.0f, 0.0f, 0.0f, 1.0f }
 		} {}
 
-	// overload operator<< to print matrices
+	// ===================================
+	// operator overloading for Mat<N>
+	// ===================================
+
 	template <size_t N>
 	inline std::ostream& operator<<(std::ostream& out, const Mat<N>& m)
 	{
@@ -120,32 +163,6 @@ namespace la
 		}
 
 		return out;
-	}
-
-	template <size_t N>
-	constexpr Mat<N> transpose(const Mat<N>& m)
-	{
-		Mat<N> result{};
-
-		for (size_t col{ 0 }; col < N; ++col)
-		{
-			for (size_t row{ 0 }; row < N; ++row)
-			{
-				result[col][row] = m[row][col];
-			}
-		}
-
-		return result;
-	}
-
-	constexpr Mat3 crossMatrix(const Vec3& v)
-	{
-		return Mat3
-		{
-			Vec3{  0.0f, v.z, -v.y },
-			Vec3{ -v.z,  0.0f, v.x },
-			Vec3{  v.y, -v.x,  0.0f }
-		};
 	}
 
 	template <size_t N>
@@ -196,7 +213,7 @@ namespace la
 	template <size_t N>
 	constexpr Mat<N> operator/(const Mat<N>& m1, float scalar)
 	{
-		if (abs(scalar) < FLT_EPSILON)
+		if (std::abs(scalar) < FLT_EPSILON)
 		{
 			return Mat<N>(std::numeric_limits<float>::quiet_NaN());
 		}
@@ -236,6 +253,36 @@ namespace la
 		}
 
 		return result;
+	}
+
+	// ===================================
+	// function definitions for Mat<N>
+	// ===================================
+
+	template <size_t N>
+	constexpr Mat<N> transpose(const Mat<N>& m)
+	{
+		Mat<N> result{};
+
+		for (size_t col{ 0 }; col < N; ++col)
+		{
+			for (size_t row{ 0 }; row < N; ++row)
+			{
+				result[col][row] = m[row][col];
+			}
+		}
+
+		return result;
+	}
+
+	constexpr Mat3 crossMatrix(const Vec3& v)
+	{
+		return Mat3
+		{
+			Vec3{  0.0f, v.z, -v.y },
+			Vec3{ -v.z,  0.0f, v.x },
+			Vec3{  v.y, -v.x,  0.0f }
+		};
 	}
 
 	template <size_t N>
@@ -441,11 +488,13 @@ namespace la
 	template <size_t N>
 	constexpr bool equal(const Mat<N>& m1, const Mat<N>& m2)
 	{
+		constexpr float epsilon{ 0.00001f };
+
 		for (size_t c{ 0 }; c < N; ++c)
 		{
 			for (size_t r{ 0 }; r < N; ++r)
 			{
-				if (std::abs(m1[c][r] - m2[c][r]) > FLT_EPSILON)
+				if (std::abs(m1[c][r] - m2[c][r]) > epsilon)
 				{
 					return false;
 				}
