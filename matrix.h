@@ -1,4 +1,7 @@
-#include "vector.hpp"
+#ifndef MATRIX_H
+#define MATRIX_H
+
+#include "vector.h"
 #include <array>
 
 namespace la
@@ -37,9 +40,11 @@ namespace la
 	requires (N >= 2 && N <= 4)
 	[[nodiscard]] constexpr float cofactor(const Mat<N>& m, std::size_t row, std::size_t col);
 
-	[[nodiscard]] constexpr Mat4 rotate(float angleRadians, const Vec3& axis);
+	[[nodiscard]] constexpr Mat4 rotate(const Mat4& m, float angleRadians, const Vec3& axis);
 
-	[[nodiscard]] constexpr Mat4 scale(float factor, const Vec3& direction);
+	[[nodiscard]] constexpr Mat4 scale(const Mat4& m, float factor, const Vec3& direction);
+
+	[[nodiscard]] constexpr Mat4 translate(const Mat4& m, const Vec3& v);
 
 	[[nodiscard]] constexpr Mat3 crossMatrix(const Vec3& v);
 
@@ -423,7 +428,7 @@ namespace la
 		return result;
 	}
 
-	constexpr Mat4 rotate(float angleRadians, const Vec3& axis)
+	constexpr Mat4 rotate(const Mat4& m, float angleRadians, const Vec3& axis)
 	{
 		const Vec3 n{ normalize(axis) };
 		const float cos{ std::cos(angleRadians) };
@@ -452,10 +457,10 @@ namespace la
 			n.z * n.z * oneMinusCos + cos
 		};
 
-		return Mat4{ Vec4{ p, 0.0f }, Vec4{ q, 0.0f }, Vec4{ r, 0.0f }, Vec4{ 0.0f, 0.0f, 0.0f, 1.0f } };
+		return m * Mat4{ Vec4{ p, 0.0f }, Vec4{ q, 0.0f }, Vec4{ r, 0.0f }, Vec4{ 0.0f, 0.0f, 0.0f, 1.0f } };
 	}
 
-	constexpr Mat4 scale(float factor, const Vec3& direction)
+	constexpr Mat4 scale(const Mat4& m, float factor, const Vec3& direction)
 	{
 		const Vec3 n{ normalize(direction) };
 
@@ -482,7 +487,15 @@ namespace la
 			1.0f + factorMinusOne * n.z * n.z
 		};
 
-		return Mat4{ Vec4{ p, 0.0f }, Vec4{ q, 0.0f }, Vec4{ r, 0.0f }, Vec4{ 0.0f, 0.0f, 0.0f, 1.0f } };
+		return m * Mat4{ Vec4{ p, 0.0f }, Vec4{ q, 0.0f }, Vec4{ r, 0.0f }, Vec4{ 0.0f, 0.0f, 0.0f, 1.0f } };
+	}
+
+	constexpr Mat4 translate(const Mat4& m, const Vec3& v)
+	{
+		Mat4 translation{ 1.0f };
+		translation[3] = Vec4{ v, 1.0f };
+
+		return m * translation;
 	}
 
 	template <size_t N>
@@ -504,3 +517,5 @@ namespace la
 		return true;
 	}
 }
+
+#endif 

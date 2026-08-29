@@ -144,8 +144,9 @@
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="matrix.hpp" />
-    <ClInclude Include="vector.hpp" />
+    <ClInclude Include="matrix.h" />
+    <ClInclude Include="polar.h" />
+    <ClInclude Include="vector.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
