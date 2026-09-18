@@ -142,6 +142,7 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="quaternion.h" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="matrix.h" />
