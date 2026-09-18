@@ -71,6 +71,54 @@ namespace la
 
 		constexpr Vec<2> operator-() const { return Vec<2>{ -x, -y }; }
 
+		constexpr Vec<2>& operator+=(const Vec<2>& v)
+		{
+			this->x += v.x;
+			this->y += v.y;
+
+			return *this;
+		}
+
+		constexpr Vec<2>& operator-=(const Vec<2>& v)
+		{
+			this->x -= v.x;
+			this->y -= v.y;
+
+			return *this;
+		}
+
+		constexpr Vec<2>& operator*=(const Vec<2>& v)
+		{
+			this->x *= v.x;
+			this->y *= v.y;
+
+			return *this;
+		}
+
+		constexpr Vec<2>& operator*=(float k)
+		{
+			this->x *= k;
+			this->y *= k;
+
+			return *this;
+		}
+
+		constexpr Vec<2>& operator/=(float k)
+		{
+			const float invK{ 1.0f / k };
+			*this *= invK;
+
+			return *this;
+		}
+
+		constexpr Vec<2>& operator/=(const Vec<2>& v)
+		{
+			this->x /= v.x;
+			this->y /= v.y;
+
+			return *this;
+		}
+
 		constexpr float length() const { return std::sqrt(dot(*this, *this)); }
 		constexpr float lengthSquared() const { return dot(*this, *this); }
 	};
@@ -108,6 +156,59 @@ namespace la
 		}
 
 		constexpr Vec<3> operator-() const { return Vec<3>{ -x, -y, -z }; }
+
+		constexpr Vec<3>& operator+=(const Vec<3>& v)
+		{
+			this->x += v.x;
+			this->y += v.y;
+			this->z += v.z;
+
+			return *this;
+		}
+
+		constexpr Vec<3>& operator-=(const Vec<3>& v)
+		{
+			this->x -= v.x;
+			this->y -= v.y;
+			this->z -= v.z;
+
+			return *this;
+		}
+
+		constexpr Vec<3>& operator*=(const Vec<3>& v)
+		{
+			this->x *= v.x;
+			this->y *= v.y;
+			this->z *= v.z;
+
+			return *this;
+		}
+
+		constexpr Vec<3>& operator*=(float k)
+		{
+			this->x *= k;
+			this->y *= k;
+			this->z *= k;
+
+			return *this;
+		}
+
+		constexpr Vec<3>& operator/=(float k)
+		{
+			const float invK{ 1.0f / k };
+			*this *= invK;
+
+			return *this;
+		}
+
+		constexpr Vec<3>& operator/=(const Vec<3>& v)
+		{
+			this->x /= v.x;
+			this->y /= v.y;
+			this->z /= v.z;
+
+			return *this;
+		}
 
 		constexpr float length() const { return std::sqrt(dot(*this, *this)); }
 		constexpr float lengthSquared() const { return dot(*this, *this); }
@@ -152,6 +253,64 @@ namespace la
 
 		constexpr Vec<4> operator-() const { return Vec<4>{ -x, -y, -z, -w }; }
 
+		constexpr Vec<4>& operator+=(const Vec<4>& v)
+		{
+			this->x += v.x;
+			this->y += v.y;
+			this->z += v.z;
+			this->w += v.w;
+
+			return *this;
+		}
+
+		constexpr Vec<4>& operator-=(const Vec<4>& v)
+		{
+			this->x -= v.x;
+			this->y -= v.y;
+			this->z -= v.z;
+			this->w -= v.w;
+
+			return *this;
+		}
+
+		constexpr Vec<4>& operator*=(const Vec<4>& v)
+		{
+			this->x *= v.x;
+			this->y *= v.y;
+			this->z *= v.z;
+			this->w *= v.w;
+
+			return *this;
+		}
+
+		constexpr Vec<4>& operator*=(float k)
+		{
+			this->x *= k;
+			this->y *= k;
+			this->z *= k;
+			this->w *= k;
+
+			return *this;
+		}
+
+		constexpr Vec<4>& operator/=(float k)
+		{
+			const float invK{ 1.0f / k };
+			*this *= invK;
+
+			return *this;
+		}
+
+		constexpr Vec<4>& operator/=(const Vec<4>& v)
+		{
+			this->x /= v.x;
+			this->y /= v.y;
+			this->z /= v.z;
+			this->w /= v.w;
+
+			return *this;
+		}
+
 		constexpr float length() const { return std::sqrt(dot(*this, *this)); }
 		constexpr float lengthSquared() const { return dot(*this, *this); }
 	};
@@ -181,90 +340,57 @@ namespace la
 	}
 
 	template <size_t N>
-	constexpr Vec<N> operator+(const Vec<N>& v1, const Vec<N>& v2)
+	constexpr Vec<N> operator+(Vec<N> v1, const Vec<N>& v2)
 	{
-		Vec<N> result{};
+		v1 += v2;
 
-		for (size_t idx{ 0 }; idx < N; ++idx)
-		{
-			result[idx] = v1[idx] + v2[idx];
-		}
-
-		return result;
+		return v1;
 	}
 
 	template <size_t N>
-	constexpr Vec<N> operator-(const Vec<N>& v1, const Vec<N>& v2)
+	constexpr Vec<N> operator-(Vec<N> v1, const Vec<N>& v2)
 	{
-		Vec<N> result{};
+		v1 -= v2;
 
-		for (size_t idx{ 0 }; idx < N; ++idx)
-		{
-			result[idx] = v1[idx] - v2[idx];
-		}
-
-		return result;
+		return v1;
 	}
 
 	template <size_t N>
-	constexpr Vec<N> operator*(const Vec<N>& v, const float scalar)
+	constexpr Vec<N> operator*(Vec<N> v, float scalar)
 	{
-		Vec<N> result{};
+		v *= scalar;
 
-		for (size_t idx{ 0 }; idx < N; ++idx)
-		{
-			result[idx] = scalar * v[idx];
-		}
-
-		return result;
+		return v;
 	}
 
 	template <size_t N>
-	constexpr Vec<N> operator*(const float scalar, const Vec<N>& v)
+	constexpr Vec<N> operator*(float scalar, Vec<N> v)
 	{
 		return v * scalar;
 	}
 
 	template <size_t N>
-	constexpr Vec<N> operator*(const Vec<N>& v1, const Vec<N>& v2)
+	constexpr Vec<N> operator*(Vec<N> v1, const Vec<N>& v2)
 	{
-		Vec<N> result{};
+		v1 *= v2;
 
-		for (size_t idx{ 0 }; idx < N; ++idx)
-		{
-			result[idx] = v1[idx] * v2[idx];
-		}
-
-		return result;
+		return v1;
 	}
 
 	template <size_t N>
-	constexpr Vec<N> operator/(const Vec<N>& v, float scalar)
+	constexpr Vec<N> operator/(Vec<N> v, float scalar)
 	{
-		if (std::abs(scalar) < FLT_EPSILON)
-			return Vec<N>(std::numeric_limits<float>::quiet_NaN());
+		v /= scalar;
 
-		float invScalar{ 1.0f / scalar };
-
-		return v * invScalar;
+		return v;
 	}
 
 	template <size_t N>
-	constexpr Vec<N> operator/(const Vec<N>& v1, const Vec<N>& v2)
+	constexpr Vec<N> operator/(Vec<N> v1, const Vec<N>& v2)
 	{
-		Vec<N> result{};
+		v1 /= v2;
 
-		for (size_t idx{ 0 }; idx < N; ++idx)
-		{
-			if (std::abs(v2[idx]) < FLT_EPSILON)
-			{
-				return Vec<N>(std::numeric_limits<float>::quiet_NaN());
-			}
-
-			result[idx] = v1[idx] / v2[idx];
-		}
-
-		return result;
+		return v1;
 	}
 
 	template <size_t N>
