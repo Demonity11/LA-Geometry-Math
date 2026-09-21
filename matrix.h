@@ -48,6 +48,9 @@ namespace la
 
 	[[nodiscard]] constexpr Mat3 crossMatrix(const Vec3& v);
 
+	template <size_t N>
+	constexpr Mat<N> operator*(const Mat<N>& m1, const Mat<N>& m2);
+
 	// ===================================
 	// type definitions for Mat<N>
 	// ===================================
@@ -65,6 +68,44 @@ namespace la
 		constexpr const Vec2& operator[](size_t index) const { return m_data[index]; }
 
 		constexpr Mat<2> operator-() const { return Mat<2>{ -m_data[0], -m_data[1] }; }
+
+		constexpr Mat<2>& operator+=(const Mat<2>& m)
+		{
+			this->m_data[0] += m[0];
+			this->m_data[1] += m[1];
+
+			return *this;
+		}
+
+		constexpr Mat<2>& operator-=(const Mat<2>& m)
+		{
+			this->m_data[0] -= m[0];
+			this->m_data[1] -= m[1];
+
+			return *this;
+		}
+
+		constexpr Mat<2>& operator*=(const float k)
+		{
+			this->m_data[0] *= k;
+			this->m_data[1] *= k;
+
+			return *this;
+		}
+
+		constexpr Mat<2>& operator*=(const Mat<2>& m)
+		{
+			*this = *this * m;
+			return *this;
+		}
+
+		constexpr Mat<2>& operator/=(const float k)
+		{
+			const float invK{ 1.0f / k };
+			*this *= invK;
+
+			return *this;
+		}
 
 	private:
 		std::array<Vec2, 2> m_data{};
@@ -88,6 +129,47 @@ namespace la
 		constexpr const Vec3& operator[](size_t index) const { return m_data[index]; }
 
 		constexpr Mat<3> operator-() const { return Mat<3>{ -m_data[0], -m_data[1], -m_data[2] }; }
+
+		constexpr Mat<3>& operator+=(const Mat<3>& m)
+		{
+			this->m_data[0] += m[0];
+			this->m_data[1] += m[1];
+			this->m_data[2] += m[2];
+
+			return *this;
+		}
+
+		constexpr Mat<3>& operator-=(const Mat<3>& m)
+		{
+			this->m_data[0] -= m[0];
+			this->m_data[1] -= m[1];
+			this->m_data[2] -= m[2];
+
+			return *this;
+		}
+
+		constexpr Mat<3>& operator*=(const float k)
+		{
+			this->m_data[0] *= k;
+			this->m_data[1] *= k;
+			this->m_data[2] *= k;
+
+			return *this;
+		}
+
+		constexpr Mat<3>& operator*=(const Mat<3>& m)
+		{
+			*this = *this * m;
+			return *this;
+		}
+
+		constexpr Mat<3>& operator/=(const float k)
+		{
+			const float invK{ 1.0f / k };
+			*this *= invK;
+
+			return *this;
+		}
 
 	private:
 		std::array<Vec3, 3> m_data{};
@@ -113,6 +195,50 @@ namespace la
 		constexpr const Vec4& operator[](size_t index) const { return m_data[index]; }
 
 		constexpr Mat<4> operator-() const { return Mat<4>{ -m_data[0], -m_data[1], -m_data[2], -m_data[3] }; }
+
+		constexpr Mat<4>& operator+=(const Mat<4>& m)
+		{
+			this->m_data[0] += m[0];
+			this->m_data[1] += m[1];
+			this->m_data[2] += m[2];
+			this->m_data[3] += m[3];
+
+			return *this;
+		}
+
+		constexpr Mat<4>& operator-=(const Mat<4>& m)
+		{
+			this->m_data[0] -= m[0];
+			this->m_data[1] -= m[1];
+			this->m_data[2] -= m[2];
+			this->m_data[3] -= m[3];
+
+			return *this;
+		}
+
+		constexpr Mat<4>& operator*=(const float k)
+		{
+			this->m_data[0] *= k;
+			this->m_data[1] *= k;
+			this->m_data[2] *= k;
+			this->m_data[3] *= k;
+
+			return *this;
+		}
+
+		constexpr Mat<4>& operator*=(const Mat<4>& m)
+		{
+			*this = *this * m;
+			return *this;
+		}
+
+		constexpr Mat<4>& operator/=(const float k)
+		{
+			const float invK{ 1.0f / k };
+			*this *= invK;
+
+			return *this;
+		}
 
 	private:
 		std::array<Vec4, 4> m_data{};
@@ -171,61 +297,43 @@ namespace la
 	}
 
 	template <size_t N>
-	constexpr Mat<N> operator+(const Mat<N>& m1, const Mat<N>& m2)
+	constexpr Mat<N> operator+(Mat<N> m1, const Mat<N>& m2)
 	{
-		Mat<N> result{};
+		m1 += m2;
 
-		for (size_t idx{ 0 }; idx < N; ++idx)
-		{
-			result[idx] = m1[idx] + m2[idx];
-		}
-
-		return result;
+		return m1;
 	}
 
 	template <size_t N>
-	constexpr Mat<N> operator-(const Mat<N>& m1, const Mat<N>& m2)
+	constexpr Mat<N> operator-(Mat<N> m1, const Mat<N>& m2)
 	{
-		Mat<N> result{};
+		m1 -= m2;
 
-		for (size_t idx{ 0 }; idx < N; ++idx)
-		{
-			result[idx] = m1[idx] - m2[idx];
-		}
-
-		return result;
+		return m1;
 	}
 	
 	template <size_t N>
-	constexpr Mat<N> operator*(const Mat<N>& m1, float scalar)
+	constexpr Mat<N> operator*(Mat<N> m, float scalar)
 	{
-		Mat<N> result{};
+		m *= scalar;
 
-		for (size_t idx{ 0 }; idx < N; ++idx)
-		{
-			result[idx] = m1[idx] * scalar;
-		}
-
-		return result;
+		return m;
 	}
 
 	template <size_t N>
-	constexpr Mat<N> operator*(float scalar, const Mat<N>& m1)
+	constexpr Mat<N> operator*(float scalar, Mat<N> m)
 	{
-		return m1 * scalar;
+		m *= scalar;
+
+		return m;
 	}
 
 	template <size_t N>
-	constexpr Mat<N> operator/(const Mat<N>& m1, float scalar)
+	constexpr Mat<N> operator/(Mat<N> m, float scalar)
 	{
-		if (std::abs(scalar) < FLT_EPSILON)
-		{
-			return Mat<N>(std::numeric_limits<float>::quiet_NaN());
-		}
+		m /= scalar;
 
-		float invScalar{ 1.0f / scalar };
-
-		return m1 * invScalar;
+		return m;
 	}
 
 	template <size_t N>

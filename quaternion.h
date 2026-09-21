@@ -16,6 +16,8 @@ namespace la
 
 		float magnitude() const { return std::sqrt(w * w + x * x + y * y + z * z); }
 		float magnitudeSquared() const { return w * w + x * x + y * y + z * z; }
+
+		constexpr Quat operator-() const { return Quat{ -w, -x, -y, -z }; }
 	};
 
 	constexpr Quat operator+(const Quat& q1, const Quat& q2)
@@ -75,5 +77,38 @@ namespace la
 		}
 
 		return Quat(std::numeric_limits<float>::quiet_NaN());
+	}
+
+	constexpr Quat slerp(const Quat& q0, Quat q1, float t)
+	{
+		float cosOmega{ dot(q0, q1) };
+
+		if (cosOmega < 0.0f)
+		{
+			q1 = -q1;
+			cosOmega = -cosOmega;
+		}
+
+		float k0{}, k1{};
+
+		if (cosOmega > 0.9999f)
+		{
+			k0 = 1.0f - t;
+			k1 = t;
+		}
+
+		else
+		{
+			float sinOmega{ std::sqrt(1.0f - cosOmega * cosOmega) };
+
+			float omega{ std::atan2(sinOmega, cosOmega) };
+
+			float oneOverSinOmega{ 1.0f / sinOmega };
+
+			k0 = std::sin((1.0f - t) * omega) * oneOverSinOmega;
+			k1 = std::sin(t * omega) * oneOverSinOmega;
+		}
+
+		return k0 * q0 + k1 * q1;
 	}
 }
