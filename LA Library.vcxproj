@@ -145,6 +145,7 @@
     <ClCompile Include="quaternion.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="conversion.h" />
     <ClInclude Include="matrix.h" />
     <ClInclude Include="polar.h" />
     <ClInclude Include="vector.h" />

@@ -1,4 +1,4 @@
-#include "vector.h"
+#include "matrix.h"
 
 namespace la
 {

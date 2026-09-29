@@ -5,6 +5,32 @@
 
 namespace la
 {
+	// ===================================
+	// forward declarations for polar.h
+	// ===================================
+
+	struct Polar2D;
+	struct Polar3D;
+	struct Cyl3D;
+
+	[[nodiscard]] constexpr auto convertToCanonicalCoord(const Polar2D& p) -> Polar2D;
+	[[nodiscard]] constexpr auto convertToCanonicalCoord(const Polar3D& p) -> Polar3D;
+
+	[[nodiscard]] constexpr auto convertVec2ToPolar2D(const Vec2& v) -> Polar2D;
+	[[nodiscard]] constexpr auto convertPolar2DToVec2(const Polar2D& p) -> Vec2;
+
+	[[nodiscard]] constexpr auto convertVec3ToPolar3D(const Vec3& v) -> Polar3D;
+	[[nodiscard]] constexpr auto convertPolar3DToVec3(const Polar3D& p) -> Vec3;
+
+	[[nodiscard]] constexpr auto convertVec3ToCyl3D(const Vec3& v) -> Cyl3D;
+	[[nodiscard]] constexpr auto convertCyl3DToVec3(const Cyl3D& c) -> Vec3;
+
+	[[nodiscard]] constexpr auto wrapPI(float theta) -> float;
+
+	// ===================================
+	// type definitions for polar.h
+	// ===================================
+
 	struct Polar2D
 	{
 		float r{ 0.0f };     // circle radius
@@ -25,19 +51,9 @@ namespace la
 		float z{ 0.0f };     // height
 	};
 
-	[[nodiscard]] constexpr auto convertToCanonicalCoord(const Polar2D& p) -> Polar2D;
-	[[nodiscard]] constexpr auto convertToCanonicalCoord(const Polar3D& p) -> Polar3D;
-
-	[[nodiscard]] constexpr auto convertVec2ToPolar2D(const Vec2& v)	   -> Polar2D;
-	[[nodiscard]] constexpr auto convertPolar2DToVec2(const Polar2D& p)	   -> Vec2;
-
-	[[nodiscard]] constexpr auto convertVec3ToPolar3D(const Vec3& v)	   -> Polar3D;
-	[[nodiscard]] constexpr auto convertPolar3DToVec3(const Polar3D& p)	   -> Vec3;
-
-	[[nodiscard]] constexpr auto convertVec3ToCyl3D(const Vec3& v)		   -> Cyl3D;
-	[[nodiscard]] constexpr auto convertCyl3DToVec3(const Cyl3D& c)		   -> Vec3;
-
-	[[nodiscard]] constexpr auto wrapPI(float theta)					   -> float;
+	// ===================================
+	// function definitions for polar.h
+	// ===================================
 
 	constexpr Polar2D convertToCanonicalCoord(const Polar2D& p)
 	{
